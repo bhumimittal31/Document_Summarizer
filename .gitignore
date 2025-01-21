@@ -1,0 +1,33 @@
+# Python-specific
+*.pyc
+*.pyo
+__pycache__/
+*.log
+
+# Virtual environment
+venv/
+env/
+
+# Model-specific
+*.bin
+*.json
+*.model
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Git-specific
+*.git
+
+# IDE-specific (if using VSCode or others)
+.vscode/
+.idea/
+
+# Data
+data/
+
+# model
+LaMini-Flan-T5-248M/
+# Secrets (if applicable)
+*.env
