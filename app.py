@@ -1,6 +1,6 @@
 import streamlit as st
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-#from langchain.document_loaders import PyPDFLoader
+from langchain.document_loaders import PyPDFLoader
 import fitz
 from transformers import T5Tokenizer, T5ForConditionalGeneration, pipeline
 import pytesseract
@@ -24,56 +24,56 @@ base_model = T5ForConditionalGeneration.from_pretrained(
 )
 
 # File loader and preprocessing
-# def file_preprocessing(file_path):
-#     file_extension = os.path.splitext(file_path)[-1].lower()
-
-#     # If the file is a PDF, use PyPDFLoader
-#     if file_extension == ".pdf":
-#         loader = PyPDFLoader(file_path)
-#         pages = loader.load_and_split()
-#         text_splitter = RecursiveCharacterTextSplitter(chunk_size=200, chunk_overlap=50)
-#         texts = text_splitter.split_documents(pages)
-#         final_texts = "".join(text.page_content for text in texts)
-#         return final_texts
-
-#     # If the file is an image, use OCR
-#     elif file_extension in [".jpg", ".jpeg", ".png"]:
-#         image = Image.open(file_path)
-#         ocr_text = pytesseract.image_to_string(image)
-#         return ocr_text
-
-#     else:
-#         st.error("Unsupported file format!")
-#         return None
-
 def file_preprocessing(file_path):
     file_extension = os.path.splitext(file_path)[-1].lower()
 
-    # If the file is a PDF, use PyMuPDF
+    # If the file is a PDF, use PyPDFLoader
     if file_extension == ".pdf":
-        text = ""
-        try:
-            with fitz.open(file_path) as pdf_doc:
-                for page in pdf_doc:
-                    text += page.get_text()
-        except Exception as e:
-            st.error(f"Error reading PDF: {str(e)}")
-            return None
-        return text
+        loader = PyPDFLoader(file_path)
+        pages = loader.load_and_split()
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=200, chunk_overlap=50)
+        texts = text_splitter.split_documents(pages)
+        final_texts = "".join(text.page_content for text in texts)
+        return final_texts
 
     # If the file is an image, use OCR
     elif file_extension in [".jpg", ".jpeg", ".png"]:
-        try:
-            image = Image.open(file_path)
-            ocr_text = pytesseract.image_to_string(image)
-        except Exception as e:
-            st.error(f"Error reading image: {str(e)}")
-            return None
+        image = Image.open(file_path)
+        ocr_text = pytesseract.image_to_string(image)
         return ocr_text
 
     else:
         st.error("Unsupported file format!")
         return None
+
+# def file_preprocessing(file_path):
+#     file_extension = os.path.splitext(file_path)[-1].lower()
+
+#     # If the file is a PDF, use PyMuPDF
+#     if file_extension == ".pdf":
+#         text = ""
+#         try:
+#             with fitz.open(file_path) as pdf_doc:
+#                 for page in pdf_doc:
+#                     text += page.get_text()
+#         except Exception as e:
+#             st.error(f"Error reading PDF: {str(e)}")
+#             return None
+#         return text
+
+#     # If the file is an image, use OCR
+#     elif file_extension in [".jpg", ".jpeg", ".png"]:
+#         try:
+#             image = Image.open(file_path)
+#             ocr_text = pytesseract.image_to_string(image)
+#         except Exception as e:
+#             st.error(f"Error reading image: {str(e)}")
+#             return None
+#         return ocr_text
+
+#     else:
+#         st.error("Unsupported file format!")
+#         return None
 # LLM pipeline for Summarization and Key Points Extraction
 # LLM pipeline for Summarization and Key Points Extraction
 def llm_pipeline(filepath, summary_length):
